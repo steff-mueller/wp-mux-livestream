@@ -13,7 +13,8 @@
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start --webpack-copy-php",
-		"env": "wp-env"
+		"env": "wp-env",
+		"composer": "wp-env run cli --env-cwd=wp-content/plugins/wp-mux-livestream composer"
 	},
 	"devDependencies": {
 		"@wordpress/env": "^10.15.0",

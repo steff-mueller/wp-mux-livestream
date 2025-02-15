@@ -1,0 +1,5 @@
+{
+    "require": {
+        "muxinc/mux-php": ">=3.21.0"
+    }
+}
