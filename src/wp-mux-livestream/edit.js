@@ -21,6 +21,9 @@ import { useBlockProps } from '@wordpress/block-editor';
  */
 import './editor.scss';
 
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, TextControl } from '@wordpress/components';
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -29,13 +32,30 @@ import './editor.scss';
  *
  * @return {Element} Element to render.
  */
-export default function Edit() {
+export default function Edit( { attributes, setAttributes } ) {
+	const { streamKey } = attributes;
+
 	return (
-		<p { ...useBlockProps() }>
-			{ __(
-				'Wp Mux Livestream – hello from the editor!',
-				'wp-mux-livestream'
-			) }
-		</p>
+		<>
+			<InspectorControls>
+				<PanelBody title={ __( 'Settings', 'wp-mux-livestream' ) }>
+					<TextControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						label={ __( 'Stream Key', 'wp-mux-livestream' ) }
+						value={ streamKey || '' }
+						onChange={ ( value ) =>
+							setAttributes( { streamKey: value } )
+						}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<p { ...useBlockProps() }>
+				{ __(
+					'Wp Mux Livestream – hello from the editor!',
+					'wp-mux-livestream'
+				) }
+			</p>
+		</>		
 	);
 }

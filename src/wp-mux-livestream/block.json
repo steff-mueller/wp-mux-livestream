@@ -3,11 +3,16 @@
 	"apiVersion": 3,
 	"name": "create-block/wp-mux-livestream",
 	"version": "0.1.0",
-	"title": "Wp Mux Livestream",
+	"title": "Mux Livestream",
 	"category": "widgets",
 	"icon": "smiley",
 	"description": "Example block scaffolded with Create Block tool.",
 	"example": {},
+	"attributes": {
+		"streamKey": {
+			"type": "string"
+		}
+	},
 	"supports": {
 		"html": false
 	},
