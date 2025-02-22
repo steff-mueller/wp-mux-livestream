@@ -33,7 +33,7 @@ import { PanelBody, TextControl } from '@wordpress/components';
  * @return {Element} Element to render.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const { streamKey } = attributes;
+	const { streamId } = attributes;
 
 	return (
 		<>
@@ -42,10 +42,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					<TextControl
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-						label={ __( 'Stream Key', 'wp-mux-livestream' ) }
-						value={ streamKey || '' }
+						label={ __( 'Live Stream ID', 'wp-mux-livestream' ) }
+						value={ streamId || '' }
 						onChange={ ( value ) =>
-							setAttributes( { streamKey: value } )
+							setAttributes( { streamId: value } )
 						}
 					/>
 				</PanelBody>

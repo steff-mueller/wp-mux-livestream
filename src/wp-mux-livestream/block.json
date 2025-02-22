@@ -9,7 +9,7 @@
 	"description": "Example block scaffolded with Create Block tool.",
 	"example": {},
 	"attributes": {
-		"streamKey": {
+		"streamId": {
 			"type": "string"
 		}
 	},
