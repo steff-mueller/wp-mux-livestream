@@ -29,6 +29,21 @@ function create_block_wp_mux_livestream_block_init() {
 }
 add_action( 'init', 'create_block_wp_mux_livestream_block_init' );
 
+/**
+ * Insert or update the playback ID for a live stream.
+ */
+function wp_mux_livestream_set_playback_id($stream_id, $playback_id) {
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'mux_livestreams';
+	$wpdb->replace(
+		$table_name,
+		array(
+			'stream_id' => $stream_id,
+			'playback_id' => $playback_id,
+		)
+	);
+}
+
 function handle_mux_webhook( WP_REST_Request $request ) {
 	$payload = $request->get_json_params();
 	$event = $payload['type'];
@@ -36,16 +51,12 @@ function handle_mux_webhook( WP_REST_Request $request ) {
 	if ( 'video.live_stream.connected' == $event ) {
 		$stream_id = $payload['data']['id'];
 		$playback_id = $payload['data']['playback_ids'][0]['id'];
-		echo "video.live_stream.connected\n";
-		echo "Stream ID: $stream_id\n";
-		echo "Playback ID: $playback_id\n";
+		wp_mux_livestream_set_playback_id($stream_id, $playback_id);
 	}
 	else if ( 'video.asset.live_stream_completed' == $event ) {
 		$stream_id = $payload['data']['live_stream_id'];
 		$playback_id = $payload['data']['playback_ids'][0]['id'];
-		echo "video.asset.live_stream_completed\n";
-		echo "Stream ID: $stream_id\n";
-		echo "Playback ID: $playback_id\n";
+		wp_mux_livestream_set_playback_id($stream_id, $playback_id);
 	}
 
 	return new WP_REST_Response( 'ok' );
@@ -58,3 +69,36 @@ add_action( 'rest_api_init', function () {
 		'permission_callback' => '__return_true',
 	) );
 } );
+
+/**
+ * Create the database table for the plugin.
+ */
+function wp_mux_livestream_create_db_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'mux_livestreams';
+
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+        stream_id varchar(255) NOT NULL,
+        playback_id varchar(255) NOT NULL,
+        PRIMARY KEY  (stream_id)
+    ) $charset_collate;";
+
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql );
+}
+
+register_activation_hook( __FILE__, 'wp_mux_livestream_create_db_table' );
+
+/**
+ * Delete the database table for the plugin.
+ */
+function wp_mux_livestream_delete_db_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'mux_livestreams';
+    $sql = "DROP TABLE IF EXISTS $table_name;";
+    $wpdb->query( $sql );
+}
+
+register_uninstall_hook( __FILE__, 'wp_mux_livestream_delete_db_table' );
