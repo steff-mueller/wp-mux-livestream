@@ -13,6 +13,8 @@
  * @package CreateBlock
  */
 
+namespace WpMuxLivestream;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -24,15 +26,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @see https://developer.wordpress.org/reference/functions/register_block_type/
  */
-function create_block_wp_mux_livestream_block_init() {
+function block_init() {
 	register_block_type( __DIR__ . '/build/wp-mux-livestream' );
 }
-add_action( 'init', 'create_block_wp_mux_livestream_block_init' );
+add_action( 'init', __NAMESPACE__ . '\block_init' );
 
 /**
  * Insert or update the playback ID for a live stream.
  */
-function wp_mux_livestream_set_playback_id($stream_id, $playback_id) {
+function set_playback_id($stream_id, $playback_id) {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'mux_livestreams';
 	$wpdb->replace(
@@ -44,28 +46,28 @@ function wp_mux_livestream_set_playback_id($stream_id, $playback_id) {
 	);
 }
 
-function handle_mux_webhook( WP_REST_Request $request ) {
+function handle_mux_webhook( \WP_REST_Request $request ) {
 	$payload = $request->get_json_params();
 	$event = $payload['type'];
 
 	if ( 'video.live_stream.connected' == $event ) {
 		$stream_id = $payload['data']['id'];
 		$playback_id = $payload['data']['playback_ids'][0]['id'];
-		wp_mux_livestream_set_playback_id($stream_id, $playback_id);
+		set_playback_id($stream_id, $playback_id);
 	}
 	else if ( 'video.asset.live_stream_completed' == $event ) {
 		$stream_id = $payload['data']['live_stream_id'];
 		$playback_id = $payload['data']['playback_ids'][0]['id'];
-		wp_mux_livestream_set_playback_id($stream_id, $playback_id);
+		set_playback_id($stream_id, $playback_id);
 	}
 
-	return new WP_REST_Response( 'ok' );
+	return new \WP_REST_Response( 'ok' );
 }
 
 add_action( 'rest_api_init', function () {
 	register_rest_route( 'wp-mux-livestream/v1', '/webhooks/mux', array(
 		'methods' => 'POST',
-		'callback' => 'handle_mux_webhook',
+		'callback' => __NAMESPACE__ . '\handle_mux_webhook',
 		'permission_callback' => '__return_true',
 	) );
 } );
@@ -73,7 +75,7 @@ add_action( 'rest_api_init', function () {
 /**
  * Create the database table for the plugin.
  */
-function wp_mux_livestream_create_db_table() {
+function create_db_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'mux_livestreams';
 
@@ -89,16 +91,16 @@ function wp_mux_livestream_create_db_table() {
     dbDelta( $sql );
 }
 
-register_activation_hook( __FILE__, 'wp_mux_livestream_create_db_table' );
+register_activation_hook( __FILE__, __NAMESPACE__ . '\create_db_table' );
 
 /**
  * Delete the database table for the plugin.
  */
-function wp_mux_livestream_delete_db_table() {
+function delete_db_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'mux_livestreams';
     $sql = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query( $sql );
 }
 
-register_uninstall_hook( __FILE__, 'wp_mux_livestream_delete_db_table' );
+register_uninstall_hook( __FILE__, __NAMESPACE__ . '\delete_db_table' );
