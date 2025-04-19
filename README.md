@@ -23,4 +23,6 @@ $ npm run env start
 $ npm run composer install
 ```
 
+Rebuild the project after changes with `$ npm run build`.
+
 This project is using [`wp-env`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/).

@@ -46,8 +46,50 @@ function set_playback_id($stream_id, $playback_id) {
 	);
 }
 
+function validate_mux_signature( \WP_REST_Request $request ) {
+	// Read headers from incoming request
+	// and get the Mux-Signature header
+	$signature = $request->get_header('mux_signature');
+	if ( empty($signature) ) {
+		return false;
+	}
+
+	// Split the signature based on ','.
+    // Format is 't=[timestamp],v1=[hash]'
+	$signature_parts = explode(',', $signature);
+
+	if( empty($signature_parts)
+		|| empty($signature_parts[0])
+		|| empty($signature_parts[1])
+	) {
+        return false;
+    }
+
+	// Strip the first occurence of 't=' and 'v1=' from both strings
+	$timestamp = str_replace('t=', '', $signature_parts[0]);
+	$mux_hash = str_replace('v1=', '', $signature_parts[1]);
+
+	// Create a payload of the timestamp from the Mux signature
+	// and the request body with a '.' in-between
+	$payload = $timestamp . '.' . $request->get_body();
+
+	// TODO: Read from Wordpress settings
+	$webhook_secret = 'TODO';
+
+	// Build a HMAC hash using SHA256 algo, using our webhook secret
+    $our_hash = hash_hmac('sha256', $payload, $webhook_secret);
+
+    // `hash_equals` performs a timing-safe crypto comparison
+    return hash_equals($our_hash, $mux_hash);
+}
+
 function handle_mux_webhook( \WP_REST_Request $request ) {
 	$payload = $request->get_json_params();
+
+	if ( ! validate_mux_signature( $request ) ) {
+		return new \WP_REST_Response( 'Invalid signature', 401 );
+	}
+
 	$event = $payload['type'];
 
 	if ( 'video.live_stream.connected' == $event ) {

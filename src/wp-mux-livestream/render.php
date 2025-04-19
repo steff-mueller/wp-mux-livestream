@@ -2,22 +2,24 @@
 
 namespace WpMuxLivestream;
 
-function get_playback_id($attributes)
-{
-	$stream_id = $attributes['streamId'];
-	if ( !isset( $stream_id ) || empty( $stream_id ) )
-	{
-		return '';
-	}
+if ( ! function_exists( __NAMESPACE__ . '\get_playback_id' ) ) {
+    function get_playback_id($attributes)
+    {
+        $stream_id = $attributes['streamId'];
+        if ( !isset( $stream_id ) || empty( $stream_id ) )
+        {
+            return '';
+        }
 
-	global $wpdb;
-	$table_name = $wpdb->prefix . 'mux_livestreams';
-	return $wpdb->get_var( 
-		$wpdb->prepare( 
-			"SELECT playback_id FROM $table_name WHERE stream_id = %s",
-			$stream_id
-		)
-	);
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'mux_livestreams';
+        return $wpdb->get_var( 
+            $wpdb->prepare( 
+                "SELECT playback_id FROM $table_name WHERE stream_id = %s",
+                $stream_id
+            )
+        );
+    }
 }
 
 $playback_id = get_playback_id($attributes);
