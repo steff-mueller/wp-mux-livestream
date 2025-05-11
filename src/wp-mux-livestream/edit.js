@@ -52,9 +52,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<p { ...useBlockProps() }>
 				{ __(
-					'Wp Mux Livestream – hello from the editor!',
+					'Live Stream ID:',
 					'wp-mux-livestream'
-				) }
+				) } {streamId || __( 'No stream ID provided', 'wp-mux-livestream' ) }
 			</p>
 		</>		
 	);
