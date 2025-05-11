@@ -1,13 +1,12 @@
 <?php
 /**
  * Plugin Name:       Wp Mux Livestream
- * Description:       Example block scaffolded with Create Block tool.
- * Version:           0.1.0
+ * Description:       Mux Livestream Block for WordPress.
+ * Version:           0.1.1
  * Requires at least: 6.7
  * Requires PHP:      7.4
- * Author:            The WordPress Contributors
- * License:           GPL-2.0-or-later
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Author:            Steffen Müller
+ * License:           MIT
  * Text Domain:       wp-mux-livestream
  *
  * @package CreateBlock
