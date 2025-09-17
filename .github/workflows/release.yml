@@ -1,0 +1,39 @@
+name: Plugin Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+      
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and package
+        run: |
+          npm run env start
+          npm run composer install
+          npm run build
+          npm run plugin-zip --root-folder='wp-mux-livestream'
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --title "Release ${{ github.ref_name }}" \
+            --notes "New release for ${{ github.ref_name }}" \
+            "wp-mux-livestream.zip"
