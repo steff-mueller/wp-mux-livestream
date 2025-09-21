@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:       Wp Mux Livestream
+ * Plugin Name:       WP Mux Livestream
  * Description:       Mux Livestream Block for WordPress.
- * Version:           0.1.1
+ * Version:           0.1.2
  * Requires at least: 6.7
  * Requires PHP:      7.4
  * Author:            Steffen Müller
@@ -33,7 +33,7 @@ add_action( 'init', __NAMESPACE__ . '\block_init' );
 /**
  * Insert or update the playback ID for a live stream.
  */
-function set_playback_id($stream_id, $playback_id) {
+function set_playback_id($stream_id, $playback_id, $is_live) {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'mux_livestreams';
 	$wpdb->replace(
@@ -41,6 +41,7 @@ function set_playback_id($stream_id, $playback_id) {
 		array(
 			'stream_id' => $stream_id,
 			'playback_id' => $playback_id,
+            'is_live' => $is_live,
 		)
 	);
 }
@@ -94,12 +95,12 @@ function handle_mux_webhook( \WP_REST_Request $request ) {
 	if ( 'video.live_stream.connected' == $event ) {
 		$stream_id = $payload['data']['id'];
 		$playback_id = $payload['data']['playback_ids'][0]['id'];
-		set_playback_id($stream_id, $playback_id);
+		set_playback_id($stream_id, $playback_id, true);
 	}
 	else if ( 'video.asset.live_stream_completed' == $event ) {
 		$stream_id = $payload['data']['live_stream_id'];
 		$playback_id = $payload['data']['playback_ids'][0]['id'];
-		set_playback_id($stream_id, $playback_id);
+		set_playback_id($stream_id, $playback_id, false);
 	}
 
 	return new \WP_REST_Response( 'ok' );
@@ -125,6 +126,7 @@ function create_db_table() {
     $sql = "CREATE TABLE $table_name (
         stream_id varchar(255) NOT NULL,
         playback_id varchar(255) NOT NULL,
+        is_live boolean DEFAULT false NOT NULL,
         PRIMARY KEY  (stream_id)
     ) $charset_collate;";
 

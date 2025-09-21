@@ -1,8 +1,8 @@
 {
 	"name": "wp-mux-livestream",
-	"version": "0.1.1",
-	"description": "Example block scaffolded with Create Block tool.",
-	"author": "The WordPress Contributors",
+	"version": "0.1.2",
+	"description": "Mux Livestream Block for WordPress.",
+	"author": "Steffen Müller",
 	"license": "MIT",
 	"main": "build/index.js",
 	"scripts": {
