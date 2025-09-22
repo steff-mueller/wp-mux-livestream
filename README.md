@@ -15,7 +15,7 @@ Now you can create a "Mux Livestream" block in the Wordpress editor. Enter your 
 
 ### Caveats
 
-Currently, after you install the plugin, it won't be able to find any of your past recordings. The plugin will only detect livestreams and recordings which have been created after the webhook registration.
+Currently, after you install the plugin, it won't be able to find any of your past recordings. The plugin will only detect active livestreams and recordings which have been created after the webhook registration.
 
 ## Development
 
