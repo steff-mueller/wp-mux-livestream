@@ -18,17 +18,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+// Plugin constants
+define( 'WP_MUX_LIVESTREAM_VERSION', '0.1.2' );
+define( 'WP_MUX_LIVESTREAM_DB_VERSION', '1.0' );
+
 /**
- * Registers the block using the metadata loaded from the `block.json` file.
- * Behind the scenes, it registers also all assets so they can be enqueued
- * through the block editor in the corresponding context.
- *
- * @see https://developer.wordpress.org/reference/functions/register_block_type/
+ * Initialize plugin and check for database updates.
  */
-function block_init() {
+function init_plugin() {
+	// Check if database needs to be updated
+	check_database_version();
+	
+	// Register the block
 	register_block_type( __DIR__ . '/build/wp-mux-livestream' );
 }
-add_action( 'init', __NAMESPACE__ . '\block_init' );
+add_action( 'init', __NAMESPACE__ . '\init_plugin' );
+
+/**
+ * Check if database schema needs to be updated.
+ */
+function check_database_version() {
+	$installed_db_version = get_option( 'wp_mux_livestream_db_version' );
+	
+	if ( $installed_db_version !== WP_MUX_LIVESTREAM_DB_VERSION ) {
+		create_db_table();
+		update_option( 'wp_mux_livestream_db_version', WP_MUX_LIVESTREAM_DB_VERSION );
+	}
+}
 
 /**
  * Insert or update the playback ID for a live stream.
@@ -115,7 +131,8 @@ add_action( 'rest_api_init', function () {
 } );
 
 /**
- * Create the database table for the plugin.
+ * Create or update the database table for the plugin.
+ * This function is safe to run multiple times and will only create/update as needed.
  */
 function create_db_table() {
     global $wpdb;
@@ -132,18 +149,32 @@ function create_db_table() {
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
+    
+    // Store the database version
+    update_option( 'wp_mux_livestream_db_version', WP_MUX_LIVESTREAM_DB_VERSION );
 }
 
-register_activation_hook( __FILE__, __NAMESPACE__ . '\create_db_table' );
+/**
+ * Plugin activation hook - ensures database is created on activation.
+ */
+function activate_plugin() {
+	create_db_table();
+}
+
+register_activation_hook( __FILE__, __NAMESPACE__ . '\activate_plugin' );
 
 /**
- * Delete the database table for the plugin.
+ * Delete the database table and cleanup plugin options.
  */
 function delete_db_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'mux_livestreams';
     $sql = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query( $sql );
+    
+    // Clean up plugin options
+    delete_option( 'wp_mux_livestream_db_version' );
+    delete_option( 'wp_mux_livestream_options' );
 }
 
 register_uninstall_hook( __FILE__, __NAMESPACE__ . '\delete_db_table' );
