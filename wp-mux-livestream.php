@@ -42,7 +42,6 @@ function check_database_version() {
 	
 	if ( $installed_db_version !== WP_MUX_LIVESTREAM_DB_VERSION ) {
 		create_db_table();
-		update_option( 'wp_mux_livestream_db_version', WP_MUX_LIVESTREAM_DB_VERSION );
 	}
 }
 
