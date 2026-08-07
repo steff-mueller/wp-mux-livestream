@@ -14,9 +14,13 @@
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start --webpack-copy-php",
 		"env": "wp-env",
-		"composer": "wp-env run cli --env-cwd=wp-content/plugins/wp-mux-livestream composer"
+		"composer": "wp-env run cli --env-cwd=wp-content/plugins/wp-mux-livestream composer",
+		"pretest:e2e": "npm run build",
+		"test:e2e": "wp-scripts test-playwright"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.49.1",
+		"@wordpress/e2e-test-utils-playwright": "^1.15.0",
 		"@wordpress/env": "^10.15.0",
 		"@wordpress/scripts": "^30.8.1"
 	}

@@ -38,3 +38,17 @@ $ npm run composer install
 Rebuild the project after changes with `$ npm run build`.
 
 This project is using [`wp-env`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/).
+
+### Testing
+
+```bash
+$ npm run test:e2e
+```
+
+This runs the Playwright integration suite in `tests/e2e/` against the wp-env
+test site on port 8889. It builds the plugin and starts wp-env for you, so
+Docker needs to be running — but no Mux account and no ngrok tunnel are
+required: the tests sign their own webhook payloads with a test secret and
+intercept the Mux CDN requests the block makes, so nothing leaves your machine.
+
+Traces and screenshots for failed runs land in `artifacts/`.

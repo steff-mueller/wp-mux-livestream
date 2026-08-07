@@ -1,5 +1,8 @@
 build/
 
+# Playwright test artifacts (traces, screenshots, saved storage state)
+artifacts/
+
 # Logs
 logs
 *.log
