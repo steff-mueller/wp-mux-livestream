@@ -1,6 +1,6 @@
 # wp-mux-livestream
 
-Provides a Mux Livestream block to embed a livestream on your Wordpress site. The block displays the livestream if you are live, or the last recording of the livestream if the livestream is not active.
+Provides a Mux Livestream block to embed a livestream on your Wordpress site. If the livestream is not active, it displays the last recording.
 
 This plugin requires a https://www.mux.com account.
 
@@ -15,7 +15,7 @@ Now you can create a "Mux Livestream" block in the Wordpress editor. Enter your 
 
 ### Caveats
 
-Currently, after you install the plugin, it won't be able to find any of your past recordings. The plugin will only detect active livestreams and recordings which have been created after the webhook registration.
+The plugin will only detect recordings which have been created after the plugin install / webhook registration.
 
 ## Development
 
